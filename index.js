@@ -4,12 +4,14 @@ import { getCat } from "./cat.js";
 import { showMenu, closeMenu } from "./menu.js";
 import { Stage } from "telegraf/scenes";
 import setWaterSceneCreator from "./scenes/setWaterSceneCreator.js";
+import addWaterIntakeSceneCreator from "./scenes/addWaterIntakeSceneCreator.js";
 
 const bot = new Telegraf(config.telegram_token, {});
 bot.use(session());
 
 const setWaterScene = setWaterSceneCreator()
-const stage = new Stage([setWaterScene]);
+const addWaterIntakeScene = addWaterIntakeSceneCreator()
+const stage = new Stage([setWaterScene, addWaterIntakeScene]);
 bot.use(stage.middleware());
 
 bot.start(async (ctx) => {
@@ -32,12 +34,21 @@ bot.start(async (ctx) => {
     // );
     // ctx.scene.enter("waterChange")
 })
+bot.action("main", async (ctx) => {
+    await ctx.editMessageReplyMarkup({
+        inline_keyboard: [
+            [Markup.button.callback("Меню", "menu")],
+            [Markup.button.callback("Записать приём воды", "add_water")],
+        ],
+    })
+})
 bot.action("menu", async (ctx) => {
     await ctx.editMessageText(`Добро пожаловать, <b>${ctx.chat.first_name}</b>!\nЭтот бот поможет вам выработать правильные привычки и наладить своё питание.`, { parse_mode: "HTML" })
     await ctx.editMessageReplyMarkup({
         inline_keyboard: [
             [Markup.button.callback("Отслеживание водного баланса", "water_balance")],
-            [Markup.button.callback("Дневник питания (в разработке)", "food")]
+            [Markup.button.callback("Дневник питания (в разработке)", "food")],
+            [Markup.button.callback("Назад", "main")],
         ],
     })
 })
@@ -53,20 +64,8 @@ bot.action("water_balance", async (ctx) => {
 })
 bot.action("set_total_water", async (ctx) => {
     await ctx.scene.enter("setWater")
-    await ctx.reply(ctx.message.text)
 })
 bot.action("add_water", async (ctx) => {
-    // ctx.reply("heheh")
-    // ctx.editMessageText("")
-    // ctx.editMessageReplyMarkup({
-    //     inline_keyboard: [
-    //         [Markup.button.callback("Установить норму воды на день", "set_total_water")],
-    //         [Markup.button.callback("Настроить напоминания", "set_remainders")],
-    //         [Markup.button.callback("Назад", "menu")]
-    //     ],
-    // })
-
-    
     await ctx.scene.enter("waterIntake")
 })
 

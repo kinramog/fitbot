@@ -12,13 +12,18 @@ const setWaterSceneCreator = () => {
     setWaterScene.on(message('text'), (ctx) => {
         let waterAmount = Number(ctx.message.text);
         if (waterAmount) {
-            changeWaterAmount()
-
+            let user_id = ctx.chat.id;
+            let chat_id = ctx;
+            let water_amount = ctx.message.text;
+            // changeWaterAmount(user_id, water_amount)
+            
+            // console.log(user_id, water_amount);
+            console.log(ctx);
+            
             ctx.reply("Количество воды в день установлено", Markup.inlineKeyboard([
                 [Markup.button.callback("Меню", "menu")],
                 [Markup.button.callback("Записать приём воды", "add_water")],
             ]))
-            ctx.reply(ctx.message.text)
             ctx.scene.leave()
         } else {
             ctx.reply("Пожалуйста, введите только число без иных символов. Например: 1800")
