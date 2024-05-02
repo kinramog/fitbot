@@ -12,14 +12,10 @@ const setWaterSceneCreator = () => {
     setWaterScene.on(message('text'), (ctx) => {
         let waterAmount = Number(ctx.message.text);
         if (waterAmount) {
-            let user_id = ctx.chat.id;
-            let chat_id = ctx;
+            let chat_id = ctx.chat.id;
             let water_amount = ctx.message.text;
-            // changeWaterAmount(user_id, water_amount)
-            
-            // console.log(user_id, water_amount);
-            console.log(ctx);
-            
+            changeWaterAmount(chat_id, water_amount)
+
             ctx.reply("Количество воды в день установлено", Markup.inlineKeyboard([
                 [Markup.button.callback("Меню", "menu")],
                 [Markup.button.callback("Записать приём воды", "add_water")],

@@ -5,6 +5,9 @@ import { showMenu, closeMenu } from "./menu.js";
 import { Stage } from "telegraf/scenes";
 import setWaterSceneCreator from "./scenes/setWaterSceneCreator.js";
 import addWaterIntakeSceneCreator from "./scenes/addWaterIntakeSceneCreator.js";
+import getUser from "./services/getUser.js";
+import createUser from "./services/createUser.js";
+
 
 const bot = new Telegraf(config.telegram_token, {});
 bot.use(session());
@@ -15,13 +18,27 @@ const stage = new Stage([setWaterScene, addWaterIntakeScene]);
 bot.use(stage.middleware());
 
 bot.start(async (ctx) => {
-    await ctx.replyWithHTML(
-        `Добро пожаловать, <b>${ctx.chat.first_name}</b>!\nЭтот бот поможет вам выработать правильные привычки и наладить своё питание.`,
-        Markup.inlineKeyboard([
-            [Markup.button.callback("Меню", "menu")],
-            [Markup.button.callback("Записать приём воды", "add_water")],
-        ])
-    );
+    let userExist = await getUser(ctx.chat.id);
+    if (userExist.success) {
+        await ctx.replyWithHTML(
+            `Добро пожаловать, <b>${ctx.chat.first_name}</b>!\nЭтот бот поможет вам выработать правильные привычки и наладить своё питание.`,
+            Markup.inlineKeyboard([
+                [Markup.button.callback("Меню", "menu")],
+                [Markup.button.callback("Записать приём воды", "add_water")],
+            ])
+        );
+    } else {
+        createUser(ctx.chat.id);
+        await ctx.replyWithHTML(
+            `Добро пожаловать, <b>${ctx.chat.first_name}</b>!\nЭтот бот поможет вам выработать правильные привычки и наладить своё питание.` +
+            `\nНапиши /help, чтобы ознакомиться со всеми возможностями`,
+            Markup.inlineKeyboard([
+                [Markup.button.callback("Меню", "menu")],
+            ])
+        );
+    }
+
+
     // ctx.reply(
     //     `Сколько миллилитров воды вы планируете выпивать в день?`,
     // {
@@ -34,11 +51,13 @@ bot.start(async (ctx) => {
     // );
     // ctx.scene.enter("waterChange")
 })
+
 bot.action("main", async (ctx) => {
     await ctx.editMessageReplyMarkup({
         inline_keyboard: [
             [Markup.button.callback("Меню", "menu")],
             [Markup.button.callback("Записать приём воды", "add_water")],
+            [Markup.button.callback("Профиль", "profile")],
         ],
     })
 })
@@ -60,7 +79,7 @@ bot.action("water_balance", async (ctx) => {
             [Markup.button.callback("Настроить напоминания", "set_remainders")],
             [Markup.button.callback("Назад", "menu")]
         ],
-    })
+    }) 
 })
 bot.action("set_total_water", async (ctx) => {
     await ctx.scene.enter("setWater")
@@ -68,7 +87,6 @@ bot.action("set_total_water", async (ctx) => {
 bot.action("add_water", async (ctx) => {
     await ctx.scene.enter("waterIntake")
 })
-
 
 
 
