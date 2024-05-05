@@ -3,10 +3,11 @@ import { config } from "./config.js";
 import { getCat } from "./cat.js";
 import { showMenu, closeMenu } from "./menu.js";
 import { Stage } from "telegraf/scenes";
+import getUser from "./services/getUser.js";
 import setWaterSceneCreator from "./scenes/setWaterSceneCreator.js";
 import addWaterIntakeSceneCreator from "./scenes/addWaterIntakeSceneCreator.js";
-import getUser from "./services/getUser.js";
-import createUser from "./services/createUser.js";
+import createUserSceneCreator from "./scenes/createUserSceneCreator.js";
+import setTimezoneSceneCreator from "./scenes/setTimezoneSceneCreator.js";
 
 
 const bot = new Telegraf(config.telegram_token, {});
@@ -14,7 +15,9 @@ bot.use(session());
 
 const setWaterScene = setWaterSceneCreator()
 const addWaterIntakeScene = addWaterIntakeSceneCreator()
-const stage = new Stage([setWaterScene, addWaterIntakeScene]);
+const createUserScene = createUserSceneCreator()
+const setTimezoneScene = setTimezoneSceneCreator()
+const stage = new Stage([setWaterScene, addWaterIntakeScene, createUserScene, setTimezoneScene]);
 bot.use(stage.middleware());
 
 bot.start(async (ctx) => {
@@ -25,17 +28,12 @@ bot.start(async (ctx) => {
             Markup.inlineKeyboard([
                 [Markup.button.callback("Меню", "menu")],
                 [Markup.button.callback("Записать приём воды", "add_water")],
+                [Markup.button.callback("Профиль", "profile")],
+                [Markup.button.callback("Настройки", "settings")],
             ])
         );
     } else {
-        createUser(ctx.chat.id);
-        await ctx.replyWithHTML(
-            `Добро пожаловать, <b>${ctx.chat.first_name}</b>!\nЭтот бот поможет вам выработать правильные привычки и наладить своё питание.` +
-            `\nНапиши /help, чтобы ознакомиться со всеми возможностями`,
-            Markup.inlineKeyboard([
-                [Markup.button.callback("Меню", "menu")],
-            ])
-        );
+        await ctx.scene.enter("createUser")
     }
 
 
@@ -58,6 +56,7 @@ bot.action("main", async (ctx) => {
             [Markup.button.callback("Меню", "menu")],
             [Markup.button.callback("Записать приём воды", "add_water")],
             [Markup.button.callback("Профиль", "profile")],
+            [Markup.button.callback("Настройки", "settings")],
         ],
     })
 })
@@ -76,10 +75,10 @@ bot.action("water_balance", async (ctx) => {
     await ctx.editMessageReplyMarkup({
         inline_keyboard: [
             [Markup.button.callback("Установить норму воды на день", "set_total_water")],
-            [Markup.button.callback("Настроить напоминания", "set_remainders")],
+            [Markup.button.callback("Настроить напоминания", "set_reminders")],
             [Markup.button.callback("Назад", "menu")]
         ],
-    }) 
+    })
 })
 bot.action("set_total_water", async (ctx) => {
     await ctx.scene.enter("setWater")
@@ -87,6 +86,41 @@ bot.action("set_total_water", async (ctx) => {
 bot.action("add_water", async (ctx) => {
     await ctx.scene.enter("waterIntake")
 })
+
+bot.action("profile", async (ctx) => {
+    let timezone = "ЧОТА +3";
+    let waterBalance = 2000;
+    let todayWaterAmount = 1150;
+
+    await ctx.editMessageText(
+        "Ваш личный профиль\n" +
+        `Количество воды в день - ${waterBalance} мл\n` +
+        `Часовой пояс ${timezone}\n` +
+        `--------------------------\n` +
+        `За сегодня вы выпили: ${todayWaterAmount}`
+    )
+    await ctx.editMessageReplyMarkup({
+        inline_keyboard: [
+            [Markup.button.callback("Назад", "main")]
+        ],
+    })
+})
+bot.action("settings", async (ctx) => {
+    await ctx.editMessageText(
+        `Настройки всех параметров`
+    )
+    await ctx.editMessageReplyMarkup({
+        inline_keyboard: [
+            [Markup.button.callback("Изменить часовой пояс", "changeTimezone")],
+            [Markup.button.callback("Изменить что-то еще", "chng")],
+            [Markup.button.callback("Назад", "menu")]
+        ],
+    });
+})
+bot.action("changeTimezone", async (ctx) => {
+    await ctx.scene.enter("setTimezone");
+})
+
 
 
 

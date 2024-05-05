@@ -1,4 +1,4 @@
-const createUser = async (chat_id) => {
+const createUser = async (chat_id, timezone) => {
     const url = `http://127.0.0.1:8000/api/create-user`;
     
     let water_amount = 0;
@@ -10,6 +10,7 @@ const createUser = async (chat_id) => {
         body: JSON.stringify({
             "chat_id": chat_id,
             "total_water_amount": water_amount,
+            "timezone": timezone,
         })
     }
 

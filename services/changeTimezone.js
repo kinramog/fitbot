@@ -1,6 +1,6 @@
-const changeWaterAmount = async (chat_id, water_amount) => {
-    const url = `http://127.0.0.1:8000/api/change-water-balance`;
-
+const changeTimezone = async (chat_id, timezone) => {
+    const url = `http://127.0.0.1:8000/api/change-timezone`;
+    
     const requestOptions = {
         method: "PATCH",
         headers: {
@@ -8,12 +8,14 @@ const changeWaterAmount = async (chat_id, water_amount) => {
         },
         body: JSON.stringify({
             "chat_id": chat_id,
-            "total_water_amount": water_amount,
+            "timezone": timezone,
         })
     }
 
     let data = await fetch(url, requestOptions);
     let jsonData = await data.json();
+
+    console.log(jsonData);
 }
 
-export default changeWaterAmount;
+export default changeTimezone;

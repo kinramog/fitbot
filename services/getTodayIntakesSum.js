@@ -7,7 +7,7 @@ const getTodayIntakesSum = async (chat_id) => {
     let intakesSum = Object.values(waterIntakes).reduce((total, item) => {
         return total + item.water_amount
     }, 0);
-
+    console.log(jsonData)
     return intakesSum;
 }
 
