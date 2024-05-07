@@ -2,6 +2,7 @@ import { Markup } from "telegraf";
 import { message } from "telegraf/filters";
 import { BaseScene } from "telegraf/scenes"
 import changeWaterAmount from "../services/changeWaterAmount.js";
+import { keyboards } from "../keyboards.js";
 
 const setWaterSceneCreator = () => {
     const setWaterScene = new BaseScene("setWater");
@@ -16,10 +17,7 @@ const setWaterSceneCreator = () => {
             let water_amount = ctx.message.text;
             changeWaterAmount(chat_id, water_amount)
 
-            ctx.reply("Количество воды в день установлено", Markup.inlineKeyboard([
-                [Markup.button.callback("Меню", "menu")],
-                [Markup.button.callback("Записать приём воды", "add_water")],
-            ]))
+            ctx.reply("Количество воды в день установлено", Markup.inlineKeyboard(keyboards.main))
             ctx.scene.leave()
         } else {
             ctx.reply("Пожалуйста, введите только число без иных символов. Например: 1800")
