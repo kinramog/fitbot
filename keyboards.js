@@ -17,12 +17,17 @@ export const keyboards = {
         [Markup.button.callback("Рост", "height")],
         [Markup.button.callback("Вес", "weight")],
         [Markup.button.callback("Пол", "gender")],
+        [Markup.button.callback("Возраст", "age")],
         [Markup.button.callback("Назад", "profile_and_settings")],
     ],
     "settings": [
         [Markup.button.callback("Изменить часовой пояс", "changeTimezone")],
         [Markup.button.callback("Изменить что-то еще", "chng")],
         [Markup.button.callback("Назад", "profile_and_settings")],
+    ],
+    "statistics": [
+        [Markup.button.callback("Четотубудет", "btn")],
+        [Markup.button.callback("Назад", "main")],
     ],
     "timezones": [
         [Markup.button.callback("Москва (UTC +3)", "Europe/Moscow")],

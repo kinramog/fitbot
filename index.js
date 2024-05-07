@@ -80,17 +80,33 @@ bot.action("add_water", async (ctx) => {
 // })
 
 bot.action("profile_and_settings", async (ctx) => {
-    let timezone = "ЧОТА +3";
-    let waterBalance = 2000;
-    let todayWaterAmount = 1150;
+    const user = await getUser(ctx.chat.id);
+    let timezone = user.user.timezone;
+    let waterBalance = user.user.total_water_amount;
+    let height = 185;
+    let weight = 80;
+    let age = 22;
+    let gender = "Мужской";
+    let calories = 2200;
+    let protein = 100;
+    let fat = 100;
+    let carbohydrate = 100;
 
     await ctx.editMessageText(
-        "Ваш личный профиль\n" +
-        `Количество воды в день - ${waterBalance} мл\n` +
-        `Часовой пояс ${timezone}\n` +
-        `Рост вес другие параметры бла бла бла ${timezone}\n` +
-        `--------------------------\n` +
-        `За сегодня вы выпили: ${todayWaterAmount}`
+        `<b>Ваш профиль</b>, ${ctx.chat.username}\n` +
+        `~~~~~~~~~~~~~~~~~~~~~~~~~~\n` +
+        `<b>Часовой пояс:</b> ${timezone}\n` +
+        `<b>Рост:</b>         ${height} см\n` +
+        `<b>Вес:</b>           ${weight} кг\n` +
+        `<b>Возраст:</b>   ${age}\n` +
+        `<b>Пол:</b> ${gender}\n` +
+        `~~~~~~~~~~~~~~~~~~~~~~~~~~\n` +
+        `<b>Норма воды в день:</b> ${waterBalance} мл\n` +
+        `<b>Суточная норма калорий:</b> ${waterBalance} ккал\n` +
+        `<b>Суточная норма\nБелков/Жиров/Углеводов:</b>\n` +
+        `${protein}/${fat}/${carbohydrate}\n` +
+        `~~~~~~~~~~~~~~~~~~~~~~~~~~\n`,
+        { parse_mode: "HTML" }
     )
     await ctx.editMessageReplyMarkup({
         inline_keyboard: keyboards.profile_and_settings
@@ -119,6 +135,19 @@ bot.action("set_total_water", async (ctx) => {
     await ctx.scene.enter("setWater");
 })
 
+bot.action("statistics", async (ctx) => {
+    const user = await getUser(ctx.chat.id);
+    let todayWaterAmount = await getTodayIntakesSum(ctx.chat.id);
+
+    await ctx.editMessageText(
+        `За сегодня вы выпили: ${todayWaterAmount} мл`,
+        { parse_mode: "HTML" }
+    )
+    await ctx.editMessageReplyMarkup({
+        inline_keyboard: keyboards.statistics
+    })
+})
+
 
 
 
@@ -126,6 +155,7 @@ bot.action("set_total_water", async (ctx) => {
 
 import translate from "translate";
 import { keyboards } from "./keyboards.js";
+import getTodayIntakesSum from "./services/getTodayIntakesSum.js";
 
 bot.help(async ctx => {
     await ctx.reply(`Пользоваться ботом очень просто. Включи мозг.`,

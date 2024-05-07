@@ -14,7 +14,6 @@ const addWaterIntakeSceneCreator = () => {
     });
     addWaterIntake.on(message('text'), async (ctx) => {
         let waterAmount = Number(ctx.message.text);
-        console.log(Number.isInteger(waterAmount))
         if (Number.isInteger(waterAmount) & waterAmount > -1) {
             await createWaterIntake(ctx.chat.id, waterAmount);
 
