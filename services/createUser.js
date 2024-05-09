@@ -1,7 +1,6 @@
-const createUser = async (chat_id, timezone) => {
+const createUser = async (chat_id, timezone, height, weight, age, gender) => {
     const url = `http://127.0.0.1:8000/api/create-user`;
-    
-    let water_amount = 0;
+
     const requestOptions = {
         method: "POST",
         headers: {
@@ -9,8 +8,11 @@ const createUser = async (chat_id, timezone) => {
         },
         body: JSON.stringify({
             "chat_id": chat_id,
-            "total_water_amount": water_amount,
             "timezone": timezone,
+            "height": height,
+            "weight": weight,
+            "age": age,
+            "gender": gender,
         })
     }
 

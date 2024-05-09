@@ -2,6 +2,7 @@ import { Telegraf, Markup, session } from "telegraf";
 import { config } from "./config.js";
 import { Stage } from "telegraf/scenes";
 import getUser from "./services/getUser.js";
+import changeUser from "./services/changeUser.js";
 import setWaterSceneCreator from "./scenes/setWaterSceneCreator.js";
 import addWaterIntakeSceneCreator from "./scenes/addWaterIntakeSceneCreator.js";
 import createUserSceneCreator from "./scenes/createUserSceneCreator.js";
@@ -102,7 +103,7 @@ bot.action("profile_and_settings", async (ctx) => {
         `<b>Пол:</b> ${gender}\n` +
         `~~~~~~~~~~~~~~~~~~~~~~~~~~\n` +
         `<b>Норма воды в день:</b> ${waterBalance} мл\n` +
-        `<b>Суточная норма калорий:</b> ${waterBalance} ккал\n` +
+        `<b>Суточная норма калорий:</b> ${calories} ккал\n` +
         `<b>Суточная норма\nБелков/Жиров/Углеводов:</b>\n` +
         `${protein}/${fat}/${carbohydrate}\n` +
         `~~~~~~~~~~~~~~~~~~~~~~~~~~\n`,
@@ -131,13 +132,14 @@ bot.action("settings", async (ctx) => {
 bot.action("changeTimezone", async (ctx) => {
     await ctx.scene.enter("setTimezone");
 })
-bot.action("set_total_water", async (ctx) => {
+bot.action("setTotalWater", async (ctx) => {
     await ctx.scene.enter("setWater");
 })
 
 bot.action("statistics", async (ctx) => {
     const user = await getUser(ctx.chat.id);
     let todayWaterAmount = await getTodayIntakesSum(ctx.chat.id);
+
 
     await ctx.editMessageText(
         `За сегодня вы выпили: ${todayWaterAmount} мл`,
@@ -147,7 +149,6 @@ bot.action("statistics", async (ctx) => {
         inline_keyboard: keyboards.statistics
     })
 })
-
 
 
 

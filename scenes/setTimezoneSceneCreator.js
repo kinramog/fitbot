@@ -1,7 +1,7 @@
 import { Markup } from "telegraf";
 import { BaseScene } from "telegraf/scenes"
-import changeTimezone from "../services/changeTimezone.js";
 import { keyboards } from "../keyboards.js";
+import changeUser from "../services/changeUser.js";
 
 const setTimezoneSceneCreator = () => {
     const setTimezoneScene = new BaseScene("setTimezone");
@@ -28,7 +28,7 @@ const setTimezoneSceneCreator = () => {
     setTimezoneScene.action(timezones, async (ctx) => {
         await ctx.answerCbQuery("Часовой пояс установлен");
         let chosenTimezone = ctx.callbackQuery.data;
-        await changeTimezone(ctx.chat.id, chosenTimezone);
+        await changeUser(ctx.chat.id, { "timezone": chosenTimezone });
         await ctx.scene.leave()
         await ctx.replyWithHTML(
             `Часовой пояс установлен`, Markup.inlineKeyboard(keyboards.main)

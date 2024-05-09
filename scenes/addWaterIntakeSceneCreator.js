@@ -41,7 +41,7 @@ const addWaterIntakeSceneCreator = () => {
                 progress = `\n🟩🟩🟩🟩🟩🟩🟧 - ${waterPercentage}%`;
             }
 
-            ctx.reply(`Приём воды записан.\nЗа сегодня вы выпили - ${currentAmount / 1000} литра.${progress}`,
+            await ctx.reply(`Приём воды записан.\nЗа сегодня вы выпили - ${currentAmount / 1000} литра.${progress}`,
                 Markup.inlineKeyboard(keyboards.main));
 
             await ctx.scene.leave();

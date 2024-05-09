@@ -22,7 +22,8 @@ export const keyboards = {
     ],
     "settings": [
         [Markup.button.callback("Изменить часовой пояс", "changeTimezone")],
-        [Markup.button.callback("Изменить что-то еще", "chng")],
+        [Markup.button.callback("Изменить суточную норму воды", "setTotalWater")],
+        [Markup.button.callback("Изменить что-то еще", "btnss")],
         [Markup.button.callback("Назад", "profile_and_settings")],
     ],
     "statistics": [
