@@ -1,12 +1,18 @@
+import translate from "translate";
 import { Telegraf, Markup, session } from "telegraf";
 import { config } from "./config.js";
 import { Stage } from "telegraf/scenes";
+import { keyboards } from "./utils/keyboards.js";
+import { message } from "./utils/messageGenerator.js";
 import getUser from "./services/getUser.js";
 import changeUser from "./services/changeUser.js";
 import setWaterSceneCreator from "./scenes/setWaterSceneCreator.js";
 import addWaterIntakeSceneCreator from "./scenes/addWaterIntakeSceneCreator.js";
 import createUserSceneCreator from "./scenes/createUserSceneCreator.js";
 import setTimezoneSceneCreator from "./scenes/setTimezoneSceneCreator.js";
+import getTodayIntakesSum from "./services/getTodayIntakesSum.js";
+import editUserParamsSceneCreator from "./scenes/editUserParamsSceneCreator.js";
+
 
 const bot = new Telegraf(config.telegram_token, {});
 bot.use(session());
@@ -52,7 +58,7 @@ bot.action("add_water", async (ctx) => {
 bot.action("profile_and_settings", async (ctx) => {
     const user = await getUser(ctx.chat.id);
     let timezone = user.user.timezone;
-    let waterBalance = user.user.total_water_amount;
+    let waterAmount = user.user.total_water_amount;
     let height = user.user.height;
     let weight = user.user.weight;
     let age = user.user.age;
@@ -63,21 +69,25 @@ bot.action("profile_and_settings", async (ctx) => {
     let carbohydrate = user.user.total_carbohydrate;
 
     await ctx.editMessageText(
-        `<b>Ваш профиль</b>, ${ctx.chat.username}\n` +
-        `~~~~~~~~~~~~~~~~~~~~~~~~~~\n` +
-        `<b>Рост:</b> ${height} см\n` +
-        `<b>Вес:</b> ${weight} кг\n` +
-        `<b>Возраст:</b> ${age}\n` +
-        `<b>Пол:</b> ${gender}\n` +
-        `~~~~~~~~~~~~~~~~~~~~~~~~~~\n` +
-        `<b>Норма воды в день:</b> ${waterBalance} мл\n` +
-        `<b>Суточная норма калорий:</b> ${calories} ккал\n` +
-        `<b>Суточная норма\nБелков/Жиров/Углеводов:</b>\n` +
-        `${proteins}/${fat}/${carbohydrate}\n` +
-        `<b>Часовой пояс:</b> ${timezone}\n` +
-        `~~~~~~~~~~~~~~~~~~~~~~~~~~\n`,
+        message.user_profile(ctx.chat.username, height, weight, age, gender, waterAmount, calories, proteins, fat, carbohydrate, timezone),
         { parse_mode: "HTML" }
     )
+    // await ctx.editMessageText(
+    //     `<b>Ваш профиль</b>, ${ctx.chat.username}\n` +
+    //     `~~~~~~~~~~~~~~~~~~~~~~~~~~\n` +
+    //     `<b>Рост:</b> ${height} см\n` +
+    //     `<b>Вес:</b> ${weight} кг\n` +
+    //     `<b>Возраст:</b> ${age}\n` +
+    //     `<b>Пол:</b> ${gender}\n` +
+    //     `~~~~~~~~~~~~~~~~~~~~~~~~~~\n` +
+    //     `<b>Норма воды в день:</b> ${waterAmount} мл\n` +
+    //     `<b>Суточная норма калорий:</b> ${calories} ккал\n` +
+    //     `<b>Суточная норма\nБелков/Жиров/Углеводов:</b>\n` +
+    //     `${proteins}/${fat}/${carbohydrate}\n` +
+    //     `<b>Часовой пояс:</b> ${timezone}\n` +
+    //     `~~~~~~~~~~~~~~~~~~~~~~~~~~\n`,
+    //     { parse_mode: "HTML" }
+    // )
     await ctx.editMessageReplyMarkup({
         inline_keyboard: keyboards.profile_and_settings
     })
@@ -126,15 +136,50 @@ bot.action([
         ctx.session.param = ctx.callbackQuery.data;
         await ctx.scene.enter("editUser");
         await ctx.answerCbQuery("");
-    })
+    }
+);
+bot.action("recalculate", async (ctx) => {
+    await ctx.editMessageText("Выберите примерный уровень своей активности: ");
+    await ctx.editMessageReplyMarkup({
+        inline_keyboard: keyboards.activity_level
+    });
+});
+
+bot.action(["1", "1.2", "1.375", "1.55", "1.725", "1.9"], async (ctx) => {
+    let rate = Number(ctx.callbackQuery.data);
+    const user = await getUser(ctx.chat.id);
+    let height = user.user.height;
+    let weight = user.user.weight;
+    let age = user.user.age;
+    let gender = user.user.gender;
+    let timezone = user.user.timezone;
+
+    let waterAmount = 25 * weight;
+    let calories = 0;
+    if (gender == "Мужской") {
+        calories = Math.round((10 * weight + 6.25 * height - 5 * age + 5) * rate);
+    } else {
+        calories = Math.round((10 * weight + 6.25 * height - 5 * age - 161) * rate);
+    }
+    let proteins = Math.round(calories * 0.3 / 4);
+    let fat = Math.round(calories * 0.3 / 9);
+    let carbohydrate = Math.round(calories * 0.4 / 4);
+    await changeUser(ctx.chat.id, { total_water_amount: waterAmount, total_calories: calories, total_proteins: proteins, total_fat: fat, total_carbohydrate: carbohydrate });
+    await ctx.answerCbQuery("Данные обновлены");
+
+    await ctx.editMessageText(
+        message.user_profile(ctx.chat.username, height, weight, age, gender, waterAmount, calories, proteins, fat, carbohydrate, timezone),
+        { parse_mode: "HTML" }
+    );
+    await ctx.editMessageReplyMarkup({
+        inline_keyboard: keyboards.profile_and_settings
+    });
+});
 
 
 
 
-import translate from "translate";
-import { keyboards } from "./keyboards.js";
-import getTodayIntakesSum from "./services/getTodayIntakesSum.js";
-import editUserParamsSceneCreator from "./scenes/editUserParamsSceneCreator.js";
+
 
 bot.help(async ctx => {
     await ctx.reply(`Пользоваться ботом очень просто. Включи мозг.`,

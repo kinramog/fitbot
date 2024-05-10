@@ -1,6 +1,6 @@
 import { Markup } from "telegraf";
 import { BaseScene } from "telegraf/scenes"
-import { keyboards } from "../keyboards.js";
+import { keyboards } from "../utils/keyboards.js";
 import createUser from "../services/createUser.js";
 import { message } from "telegraf/filters";
 
@@ -103,14 +103,8 @@ const createUserSceneCreator = () => {
         ctx.session.next_step = REG_STEPS.ACTIVITY;
         ctx.session.gender = gender;
 
-        await ctx.reply("Выберите примерный уровень своей активности: ", Markup.inlineKeyboard([
-            [Markup.button.callback("Без учета физической активности", "1")],
-            [Markup.button.callback("Сидячий образ жизни", "1.2")],
-            [Markup.button.callback("Небольшая активность", "1.375")],
-            [Markup.button.callback("Умеренная активность", "1.55")],
-            [Markup.button.callback("Высокая активность", "1.725")],
-            [Markup.button.callback("Очень высокая активность", "1.9")],
-        ]));
+        await ctx.reply("Выберите примерный уровень своей активности: ",
+            Markup.inlineKeyboard(keyboards.activity_level));
     });
     createUserScene.action(["1", "1.2", "1.375", "1.55", "1.725", "1.9"], async (ctx) => {
         await ctx.answerCbQuery("");
@@ -163,15 +157,10 @@ const createUserSceneCreator = () => {
             Markup.inlineKeyboard(keyboards.main)
         );
 
-
         // await ctx.reply("Все данные верны?", Markup.inlineKeyboard([
         //     Markup.button.callback("Да", "yes"), Markup.button.callback("Нет", "no")
         // ]));
     });
-
-
-
-
 
     // createUserScene.action(["yes", "no"], async (ctx) => {
     //     await ctx.answerCbQuery("");

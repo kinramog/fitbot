@@ -1,7 +1,7 @@
 import { Markup } from "telegraf";
 import { message } from "telegraf/filters";
 import { BaseScene } from "telegraf/scenes"
-import { keyboards } from "../keyboards.js";
+import { keyboards } from "../utils/keyboards.js";
 import changeUser from "../services/changeUser.js";
 
 const setWaterSceneCreator = () => {

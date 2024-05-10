@@ -4,7 +4,7 @@ import { BaseScene } from "telegraf/scenes"
 import createWaterIntake from "../services/createWaterIntake.js";
 import getTodayIntakesSum from "../services/getTodayIntakesSum.js";
 import getUser from "../services/getUser.js";
-import { keyboards } from "../keyboards.js";
+import { keyboards } from "../utils/keyboards.js";
 
 const addWaterIntakeSceneCreator = () => {
     const addWaterIntake = new BaseScene("waterIntake");

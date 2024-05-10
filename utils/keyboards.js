@@ -22,6 +22,7 @@ export const keyboards = {
         [Markup.button.callback("Суточная норма воды", "setTotalWater")],
         [Markup.button.callback("Суточная норма калорий", "total_calories")],
         [Markup.button.callback("Белки", "total_proteins"), Markup.button.callback("Жиры", "total_fat"), Markup.button.callback("Углеводы", "total_carbohydrates")],
+        [Markup.button.callback("Перерасчитать дневные нормы", "recalculate")],
         [Markup.button.callback("Назад", "profile_and_settings")],
     ],
     "statistics": [
@@ -35,5 +36,13 @@ export const keyboards = {
         [Markup.button.callback("Красноярск (GMT+7)", "Asia/Krasnoyarsk"), Markup.button.callback("Иркутск (GMT+8)", "Asia/Irkutsk")],
         [Markup.button.callback("Якутск (GMT+9)", "Asia/Yakutsk"), Markup.button.callback("Владивосток(GMT+10)", "Asia/Vladivostok")],
         [Markup.button.callback("Магадан (GMT+11)", "Asia/Magadan"), Markup.button.callback("Камчатка (GMT+12)", "Asia/Kamchatka")],
+    ],
+    "activity_level": [
+        [Markup.button.callback("Без учета физической активности", "1")],
+        [Markup.button.callback("Сидячий образ жизни", "1.2")],
+        [Markup.button.callback("Небольшая активность", "1.375")],
+        [Markup.button.callback("Умеренная активность", "1.55")],
+        [Markup.button.callback("Высокая активность", "1.725")],
+        [Markup.button.callback("Очень высокая активность", "1.9")],
     ],
 }
