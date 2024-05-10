@@ -1,4 +1,4 @@
-export const message = {
+export const msg = {
     "user_profile": (username, height, weight, age, gender, waterBalance, calories, proteins, fat, carbohydrate, timezone) => {
         return (
             `<b>Ваш профиль</b>, ${username}\n` +

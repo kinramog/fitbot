@@ -3,7 +3,7 @@ import { Telegraf, Markup, session } from "telegraf";
 import { config } from "./config.js";
 import { Stage } from "telegraf/scenes";
 import { keyboards } from "./utils/keyboards.js";
-import { message } from "./utils/messageGenerator.js";
+import { msg } from "./utils/messageGenerator.js";
 import getUser from "./services/getUser.js";
 import changeUser from "./services/changeUser.js";
 import setWaterSceneCreator from "./scenes/setWaterSceneCreator.js";
@@ -69,7 +69,7 @@ bot.action("profile_and_settings", async (ctx) => {
     let carbohydrate = user.user.total_carbohydrate;
 
     await ctx.editMessageText(
-        message.user_profile(ctx.chat.username, height, weight, age, gender, waterAmount, calories, proteins, fat, carbohydrate, timezone),
+        msg.user_profile(ctx.chat.username, height, weight, age, gender, waterAmount, calories, proteins, fat, carbohydrate, timezone),
         { parse_mode: "HTML" }
     )
     // await ctx.editMessageText(
@@ -144,7 +144,6 @@ bot.action("recalculate", async (ctx) => {
         inline_keyboard: keyboards.activity_level
     });
 });
-
 bot.action(["1", "1.2", "1.375", "1.55", "1.725", "1.9"], async (ctx) => {
     let rate = Number(ctx.callbackQuery.data);
     const user = await getUser(ctx.chat.id);
@@ -168,7 +167,7 @@ bot.action(["1", "1.2", "1.375", "1.55", "1.725", "1.9"], async (ctx) => {
     await ctx.answerCbQuery("Данные обновлены");
 
     await ctx.editMessageText(
-        message.user_profile(ctx.chat.username, height, weight, age, gender, waterAmount, calories, proteins, fat, carbohydrate, timezone),
+        msg.user_profile(ctx.chat.username, height, weight, age, gender, waterAmount, calories, proteins, fat, carbohydrate, timezone),
         { parse_mode: "HTML" }
     );
     await ctx.editMessageReplyMarkup({

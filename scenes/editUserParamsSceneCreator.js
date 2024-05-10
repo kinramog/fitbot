@@ -3,6 +3,7 @@ import { message } from "telegraf/filters";
 import { BaseScene } from "telegraf/scenes"
 import { keyboards } from "../utils/keyboards.js";
 import changeUser from "../services/changeUser.js";
+import { msg } from "../utils/messageGenerator.js";
 
 const editUserParamsSceneCreator = () => {
     const editUserParamsScene = new BaseScene("editUser");
@@ -34,7 +35,7 @@ const editUserParamsSceneCreator = () => {
             await ctx.scene.leave()
             delete ctx.session.param;
             let timezone = user.user.timezone;
-            let waterBalance = user.user.total_water_amount;
+            let waterAmount = user.user.total_water_amount;
             let height = user.user.height;
             let weight = user.user.weight;
             let age = user.user.age;
@@ -44,19 +45,7 @@ const editUserParamsSceneCreator = () => {
             let fat = user.user.total_fat;
             let carbohydrate = user.user.total_carbohydrate;
             await ctx.replyWithHTML(
-                `<b>Ваш профиль</b>, ${ctx.chat.username}\n` +
-                `~~~~~~~~~~~~~~~~~~~~~~~~~~\n` +
-                `<b>Рост:</b> ${height} см\n` +
-                `<b>Вес:</b> ${weight} кг\n` +
-                `<b>Возраст:</b> ${age}\n` +
-                `<b>Пол:</b> ${gender}\n` +
-                `~~~~~~~~~~~~~~~~~~~~~~~~~~\n` +
-                `<b>Норма воды в день:</b> ${waterBalance} мл\n` +
-                `<b>Суточная норма калорий:</b> ${calories} ккал\n` +
-                `<b>Суточная норма\nБелков/Жиров/Углеводов:</b>\n` +
-                `${proteins}/${fat}/${carbohydrate}\n` +
-                `<b>Часовой пояс:</b> ${timezone}\n` +
-                `~~~~~~~~~~~~~~~~~~~~~~~~~~\n`,
+                msg.user_profile(ctx.chat.username, height, weight, age, gender, waterAmount, calories, proteins, fat, carbohydrate, timezone),
                 Markup.inlineKeyboard(keyboards.profile_and_settings)
             )
         } else {
