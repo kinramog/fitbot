@@ -12,10 +12,9 @@ const setWaterSceneCreator = () => {
     });
     setWaterScene.on(message('text'), async (ctx) => {
         let waterAmount = Number(ctx.message.text);
-        if (waterAmount) {
+        if (Number.isInteger(waterAmount) & waterAmount > -1) {
             let chat_id = ctx.chat.id;
-            let water_amount = ctx.message.text;
-            await changeUser(chat_id, { "total_water_amount": water_amount });
+            await changeUser(chat_id, { "total_water_amount": waterAmount });
             await ctx.reply("Количество воды в день установлено", Markup.inlineKeyboard(keyboards.main))
             await ctx.scene.leave()
         } else {

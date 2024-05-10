@@ -15,25 +15,24 @@ const setWaterScene = setWaterSceneCreator()
 const addWaterIntakeScene = addWaterIntakeSceneCreator()
 const createUserScene = createUserSceneCreator()
 const setTimezoneScene = setTimezoneSceneCreator()
-const stage = new Stage([setWaterScene, addWaterIntakeScene, createUserScene, setTimezoneScene]);
+const editUserParamsScene = editUserParamsSceneCreator()
+const stage = new Stage([setWaterScene, addWaterIntakeScene, createUserScene, setTimezoneScene, editUserParamsScene]);
 bot.use(stage.middleware());
 
 bot.start(async (ctx) => {
-    let userExist = await getUser(ctx.chat.id);
-    if (userExist.success) {
-        await ctx.replyWithHTML(
-            `Добро пожаловать, <b>${ctx.chat.first_name}</b>!\nЭтот бот поможет вам выработать правильные привычки и наладить своё питание.`,
-            Markup.inlineKeyboard(keyboards.main)
-
-            // Markup.inlineKeyboard([
-            //     [Markup.button.callback("Меню", "menu")],
-            //     [Markup.button.callback("Записать приём воды", "add_water")],
-            //     [Markup.button.callback("Профиль", "profile")],
-            //     [Markup.button.callback("Настройки", "settings")],
-            // ])
-        );
-    } else {
-        await ctx.scene.enter("createUser")
+    try {
+        let userExist = await getUser(ctx.chat.id);
+        if (userExist.success) {
+            await ctx.replyWithHTML(
+                `Добро пожаловать, <b>${ctx.chat.first_name}</b>!\nЭтот бот поможет вам выработать правильные привычки и наладить своё питание.`,
+                Markup.inlineKeyboard(keyboards.main)
+            );
+        } else {
+            await ctx.scene.enter("createUser")
+        }
+    } catch (error) {
+        console.error("Ошибка в /start\n", error);
+        await ctx.reply("⚠❗Произошла непредвиденная ошибка❗⚠\nМы уже работаем над её исправлением!");
     }
 })
 
@@ -43,12 +42,6 @@ bot.action("main", async (ctx) => {
         { parse_mode: "HTML" }
     )
     await ctx.editMessageReplyMarkup({
-        // inline_keyboard: [
-        //     [Markup.button.callback("Меню", "menu")],
-        //     [Markup.button.callback("Записать приём воды", "add_water")],
-        //     [Markup.button.callback("Профиль", "profile")],
-        //     [Markup.button.callback("Настройки", "settings")],
-        // ],
         inline_keyboard: keyboards.main,
     })
 })
@@ -56,56 +49,32 @@ bot.action("add_water", async (ctx) => {
     await ctx.scene.enter("waterIntake");
 })
 
-// bot.action("menu", async (ctx) => {
-//     await ctx.editMessageText(
-//         `Добро пожаловать, <b>${ctx.chat.first_name}</b>!\nЭтот бот поможет вам выработать правильные привычки и наладить своё питание.`,
-//         { parse_mode: "HTML" }
-//     )
-//     await ctx.editMessageReplyMarkup({
-//         inline_keyboard: [
-//             [Markup.button.callback("Отслеживание водного баланса", "water_balance")],
-//             [Markup.button.callback("Дневник питания (в разработке)", "food")],
-//             [Markup.button.callback("Назад", "main")],
-//         ],
-//     })
-// })
-// bot.action("water_balance", async (ctx) => {
-//     await ctx.editMessageText("Отслеживание водного баланса")
-//     await ctx.editMessageReplyMarkup({
-//         inline_keyboard: [
-//             [Markup.button.callback("Установить норму воды на день", "set_total_water")],
-//             [Markup.button.callback("Настроить напоминания", "set_reminders")],
-//             [Markup.button.callback("Назад", "menu")]
-//         ],
-//     })
-// })
-
 bot.action("profile_and_settings", async (ctx) => {
     const user = await getUser(ctx.chat.id);
     let timezone = user.user.timezone;
     let waterBalance = user.user.total_water_amount;
-    let height = 185;
-    let weight = 80;
-    let age = 22;
-    let gender = "Мужской";
-    let calories = 2200;
-    let protein = 100;
-    let fat = 100;
-    let carbohydrate = 100;
+    let height = user.user.height;
+    let weight = user.user.weight;
+    let age = user.user.age;
+    let gender = user.user.gender;
+    let calories = user.user.total_calories;
+    let proteins = user.user.total_proteins;
+    let fat = user.user.total_fat;
+    let carbohydrate = user.user.total_carbohydrate;
 
     await ctx.editMessageText(
         `<b>Ваш профиль</b>, ${ctx.chat.username}\n` +
         `~~~~~~~~~~~~~~~~~~~~~~~~~~\n` +
-        `<b>Часовой пояс:</b> ${timezone}\n` +
-        `<b>Рост:</b>         ${height} см\n` +
-        `<b>Вес:</b>           ${weight} кг\n` +
-        `<b>Возраст:</b>   ${age}\n` +
+        `<b>Рост:</b> ${height} см\n` +
+        `<b>Вес:</b> ${weight} кг\n` +
+        `<b>Возраст:</b> ${age}\n` +
         `<b>Пол:</b> ${gender}\n` +
         `~~~~~~~~~~~~~~~~~~~~~~~~~~\n` +
         `<b>Норма воды в день:</b> ${waterBalance} мл\n` +
         `<b>Суточная норма калорий:</b> ${calories} ккал\n` +
         `<b>Суточная норма\nБелков/Жиров/Углеводов:</b>\n` +
-        `${protein}/${fat}/${carbohydrate}\n` +
+        `${proteins}/${fat}/${carbohydrate}\n` +
+        `<b>Часовой пояс:</b> ${timezone}\n` +
         `~~~~~~~~~~~~~~~~~~~~~~~~~~\n`,
         { parse_mode: "HTML" }
     )
@@ -123,7 +92,7 @@ bot.action("change_profile", async (ctx) => {
 })
 bot.action("settings", async (ctx) => {
     await ctx.editMessageText(
-        `Настройка дневных норм и чего-то еще`
+        `Выберите параметр для изменения`
     )
     await ctx.editMessageReplyMarkup({
         inline_keyboard: keyboards.settings
@@ -140,7 +109,6 @@ bot.action("statistics", async (ctx) => {
     const user = await getUser(ctx.chat.id);
     let todayWaterAmount = await getTodayIntakesSum(ctx.chat.id);
 
-
     await ctx.editMessageText(
         `За сегодня вы выпили: ${todayWaterAmount} мл`,
         { parse_mode: "HTML" }
@@ -150,6 +118,15 @@ bot.action("statistics", async (ctx) => {
     })
 })
 
+bot.action([
+    "height", "weight", "gender", "age",
+    "total_calories", "total_proteins", "total_fat",
+    "total_carbohydrates"],
+    async (ctx) => {
+        ctx.session.param = ctx.callbackQuery.data;
+        await ctx.scene.enter("editUser");
+        await ctx.answerCbQuery("");
+    })
 
 
 
@@ -157,6 +134,7 @@ bot.action("statistics", async (ctx) => {
 import translate from "translate";
 import { keyboards } from "./keyboards.js";
 import getTodayIntakesSum from "./services/getTodayIntakesSum.js";
+import editUserParamsSceneCreator from "./scenes/editUserParamsSceneCreator.js";
 
 bot.help(async ctx => {
     await ctx.reply(`Пользоваться ботом очень просто. Включи мозг.`,

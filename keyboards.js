@@ -13,17 +13,15 @@ export const keyboards = {
         [Markup.button.callback("Назад", "main")],
     ],
     "change_profile": [
-        // [Markup.button.callback("Имя", "name")],
-        [Markup.button.callback("Рост", "height")],
-        [Markup.button.callback("Вес", "weight")],
-        [Markup.button.callback("Пол", "gender")],
-        [Markup.button.callback("Возраст", "age")],
+        [Markup.button.callback("Рост", "height"), Markup.button.callback("Вес", "weight")],
+        [Markup.button.callback("Пол", "gender"), Markup.button.callback("Возраст", "age")],
         [Markup.button.callback("Назад", "profile_and_settings")],
     ],
     "settings": [
-        [Markup.button.callback("Изменить часовой пояс", "changeTimezone")],
-        [Markup.button.callback("Изменить суточную норму воды", "setTotalWater")],
-        [Markup.button.callback("Изменить что-то еще", "btnss")],
+        [Markup.button.callback("Часовой пояс", "changeTimezone")],
+        [Markup.button.callback("Суточная норма воды", "setTotalWater")],
+        [Markup.button.callback("Суточная норма калорий", "total_calories")],
+        [Markup.button.callback("Белки", "total_proteins"), Markup.button.callback("Жиры", "total_fat"), Markup.button.callback("Углеводы", "total_carbohydrates")],
         [Markup.button.callback("Назад", "profile_and_settings")],
     ],
     "statistics": [

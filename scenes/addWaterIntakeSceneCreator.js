@@ -14,7 +14,7 @@ const addWaterIntakeSceneCreator = () => {
     });
     addWaterIntake.on(message('text'), async (ctx) => {
         let waterAmount = Number(ctx.message.text);
-        if (Number.isInteger(waterAmount) & waterAmount > -1) {
+        if (Number.isInteger(waterAmount) & waterAmount > 0) {
             await createWaterIntake(ctx.chat.id, waterAmount);
 
             let currentAmount = await getTodayIntakesSum(ctx.chat.id);
@@ -46,7 +46,15 @@ const addWaterIntakeSceneCreator = () => {
 
             await ctx.scene.leave();
         } else {
-            ctx.reply("Пожалуйста, введите только число без иных символов. Например: 1800");
+            // Чтобы не записывать нулевые значения в бд, но дать пользователю ввести ноль, если он случайно нажал на запись
+            if (Number.isInteger(waterAmount) & waterAmount == 0) {
+                await ctx.reply(`Приём воды записан.\nЗа сегодня вы выпили - ${currentAmount / 1000} литра.${progress}`,
+                    Markup.inlineKeyboard(keyboards.main));
+
+                await ctx.scene.leave();
+            } else {
+                ctx.reply("Пожалуйста, введите только число без иных символов. Например: 1800");
+            }
         }
     });
     addWaterIntake.on("message", ctx => ctx.reply("Пожалуйста, введите только число без иных символов. Например: 1800"));
