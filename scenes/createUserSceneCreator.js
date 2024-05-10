@@ -28,6 +28,7 @@ const createUserSceneCreator = () => {
         WEIGHT: 'weight',
         AGE: 'age',
         GENDER: 'gender',
+        ACTIVITY: 'activity',
         CONFIRM: 'confirm',
     };
 
@@ -90,34 +91,75 @@ const createUserSceneCreator = () => {
             case REG_STEPS.AGE:
                 await ctx.reply("Выберите пол!");
                 break;
+
+            case REG_STEPS.ACTIVITY:
+                await ctx.reply("Выберите уровень активности!");
+                break;
         }
     });
     createUserScene.action(["man", "woman"], async (ctx) => {
         await ctx.answerCbQuery("");
         let gender = ctx.callbackQuery.data == "man" ? "Мужской" : "Женский";
-        ctx.session.next_step = REG_STEPS.CONFIRM;
+        ctx.session.next_step = REG_STEPS.ACTIVITY;
         ctx.session.gender = gender;
+
+        await ctx.reply("Выберите примерный уровень своей активности: ", Markup.inlineKeyboard([
+            [Markup.button.callback("Без учета физической активности", "1")],
+            [Markup.button.callback("Сидячий образ жизни", "1.2")],
+            [Markup.button.callback("Небольшая активность", "1.375")],
+            [Markup.button.callback("Умеренная активность", "1.55")],
+            [Markup.button.callback("Высокая активность", "1.725")],
+            [Markup.button.callback("Очень высокая активность", "1.9")],
+        ]));
+    });
+    createUserScene.action(["1", "1.2", "1.375", "1.55", "1.725", "1.9"], async (ctx) => {
+        await ctx.answerCbQuery("");
+        ctx.session.next_step = REG_STEPS.CONFIRM;
+        let rate = Number(ctx.callbackQuery.data);
+        ctx.session.rate = rate;
         let timezone = ctx.session.timezone;
         let height = ctx.session.height;
         let weight = ctx.session.weight;
         let age = ctx.session.age;
-        await ctx.reply(
+        let gender = ctx.session.gender;
+        let waterAmount = 25 * weight;
+        let calories = 0;
+        if (gender == "Мужской") {
+            calories = Math.round((10 * weight + 6.25 * height - 5 * age + 5) * rate);
+        } else {
+            calories = Math.round((10 * weight + 6.25 * height - 5 * age - 161) * rate);
+        }
+        let proteins = Math.round(calories * 0.3 / 4);
+        let fat = Math.round(calories * 0.3 / 9);
+        let carbohydrate = Math.round(calories * 0.4 / 4);
+
+        await ctx.replyWithHTML(
             `Ваши данные успешно записаны!` +
-            `<b>Часовой пояс:</b> ${timezone}\n` +
             `<b>Рост:</b> ${height} см\n` +
             `<b>Вес:</b> ${weight} кг\n` +
             `<b>Возраст:</b> ${age}\n` +
-            `<b>Пол:</b> ${gender}\n`,
-            { parse_mode: "HTML" }
+            `<b>Пол:</b> ${gender}\n` +
+            `~~~~~~~~~~~~~~~~~~~~~~~~~~\n` +
+            `<b>Норма воды в день:</b> ${waterAmount} мл\n` +
+            `<b>Суточная норма калорий:</b> ${calories} ккал\n` +
+            `<b>Суточная норма\nБелков/Жиров/Углеводов:</b>\n` +
+            `${proteins}<b>/</b>${fat}<b>/</b>${carbohydrate}\n` +
+            `<b>Часовой пояс:</b> ${timezone}\n` +
+            `~~~~~~~~~~~~~~~~~~~~~~~~~~\n`
         );
 
-        await createUser(ctx.chat.id, timezone, height, weight, age, gender);
+        await ctx.reply(
+            "На основе введенных данных были рассчитаны оптимальные значения суточных норм " +
+            "воды, калорий, белков, жиров и углеводов.\n" +
+            "Если вы захотите изменить данные, это можно будет сделать в настройках профиля."
+        );
+        await createUser(ctx.chat.id, timezone, height, weight, age, gender, waterAmount, calories, proteins, fat, carbohydrate);
         await ctx.scene.leave();
 
-        await ctx.reply("Если вы захотите изменить данные, это можно будет сделать в настройках профиля.");
+
         await ctx.replyWithHTML(
-            `Благодаря этому боту можно многое поменять в себе и своей жизни, какой-то текст, который я потом заменю` +
-            `\nНапиши /help, чтобы ознакомиться со всеми возможностями`,
+            `Все данные заполнены!\n` +
+            `Предлагаю написать /help, чтобы узнать подробности о работе бота и ознакомиться со всеми возможностями`,
             Markup.inlineKeyboard(keyboards.main)
         );
 
@@ -126,6 +168,10 @@ const createUserSceneCreator = () => {
         //     Markup.button.callback("Да", "yes"), Markup.button.callback("Нет", "no")
         // ]));
     });
+
+
+
+
 
     // createUserScene.action(["yes", "no"], async (ctx) => {
     //     await ctx.answerCbQuery("");

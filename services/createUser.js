@@ -1,4 +1,4 @@
-const createUser = async (chat_id, timezone, height, weight, age, gender) => {
+const createUser = async (chat_id, timezone, height, weight, age, gender, waterAmount, calories, proteins, fat, carbohydrate) => {
     const url = `http://127.0.0.1:8000/api/create-user`;
 
     const requestOptions = {
@@ -13,6 +13,11 @@ const createUser = async (chat_id, timezone, height, weight, age, gender) => {
             "weight": weight,
             "age": age,
             "gender": gender,
+            "total_water_amount": waterAmount,
+            "total_calories": calories,
+            "total_proteins": proteins,
+            "total_fat": fat,
+            "total_carbohydrate": carbohydrate,
         })
     }
 

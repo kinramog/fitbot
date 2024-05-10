@@ -19,7 +19,7 @@ const editUserParamsSceneCreator = () => {
 
     editUserParamsScene.enter(async (ctx) => {
         const paramName = ctx.session.param;
-        await ctx.reply(`Введите новое значение выбранного параметра - ${params[paramName]}:`);
+        await ctx.reply(`Введите новое значение параметра - ${params[paramName]}:`);
     });
     editUserParamsScene.on(message('text'), async (ctx) => {
         let paramValue = Number(ctx.message.text);
