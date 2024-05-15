@@ -12,6 +12,8 @@ import createUserSceneCreator from "./scenes/createUserSceneCreator.js";
 import setTimezoneSceneCreator from "./scenes/setTimezoneSceneCreator.js";
 import getTodayIntakesSum from "./services/getTodayIntakesSum.js";
 import editUserParamsSceneCreator from "./scenes/editUserParamsSceneCreator.js";
+import addMealSceneCreator from "./scenes/addMealSceneCreator.js";
+import getTodayMealsSum from "./services/getTodayMealsSum.js";
 
 
 const bot = new Telegraf(config.telegram_token, {});
@@ -22,7 +24,8 @@ const addWaterIntakeScene = addWaterIntakeSceneCreator()
 const createUserScene = createUserSceneCreator()
 const setTimezoneScene = setTimezoneSceneCreator()
 const editUserParamsScene = editUserParamsSceneCreator()
-const stage = new Stage([setWaterScene, addWaterIntakeScene, createUserScene, setTimezoneScene, editUserParamsScene]);
+const addMealScene = addMealSceneCreator()
+const stage = new Stage([setWaterScene, addWaterIntakeScene, createUserScene, setTimezoneScene, editUserParamsScene, addMealScene]);
 bot.use(stage.middleware());
 
 bot.start(async (ctx) => {
@@ -71,23 +74,7 @@ bot.action("profile_and_settings", async (ctx) => {
     await ctx.editMessageText(
         msg.user_profile(ctx.chat.username, height, weight, age, gender, waterAmount, calories, proteins, fat, carbohydrate, timezone),
         { parse_mode: "HTML" }
-    )
-    // await ctx.editMessageText(
-    //     `<b>Ваш профиль</b>, ${ctx.chat.username}\n` +
-    //     `~~~~~~~~~~~~~~~~~~~~~~~~~~\n` +
-    //     `<b>Рост:</b> ${height} см\n` +
-    //     `<b>Вес:</b> ${weight} кг\n` +
-    //     `<b>Возраст:</b> ${age}\n` +
-    //     `<b>Пол:</b> ${gender}\n` +
-    //     `~~~~~~~~~~~~~~~~~~~~~~~~~~\n` +
-    //     `<b>Норма воды в день:</b> ${waterAmount} мл\n` +
-    //     `<b>Суточная норма калорий:</b> ${calories} ккал\n` +
-    //     `<b>Суточная норма\nБелков/Жиров/Углеводов:</b>\n` +
-    //     `${proteins}/${fat}/${carbohydrate}\n` +
-    //     `<b>Часовой пояс:</b> ${timezone}\n` +
-    //     `~~~~~~~~~~~~~~~~~~~~~~~~~~\n`,
-    //     { parse_mode: "HTML" }
-    // )
+    );
     await ctx.editMessageReplyMarkup({
         inline_keyboard: keyboards.profile_and_settings
     })
@@ -118,9 +105,22 @@ bot.action("setTotalWater", async (ctx) => {
 bot.action("statistics", async (ctx) => {
     const user = await getUser(ctx.chat.id);
     let todayWaterAmount = await getTodayIntakesSum(ctx.chat.id);
+    let todayMeals = await getTodayMealsSum(ctx.chat.id)
+
+    let waterProgress = msg.vizual_percentage(user.user.total_water_amount, todayWaterAmount);
+    let caloriesProgress = msg.vizual_percentage(user.user.total_calories, todayMeals.calories_sum);
+    let proteinsProgress = msg.vizual_percentage(user.user.total_proteins, todayMeals.proteins_sum);
+    let fatProgress = msg.vizual_percentage(user.user.total_fat, todayMeals.fat_sum);
+    let carbohydratesProgress = msg.vizual_percentage(user.user.total_carbohydrates, todayMeals.carbohydrates_sum);
 
     await ctx.editMessageText(
-        `За сегодня вы выпили: ${todayWaterAmount} мл`,
+        `<b>Статистика за сегодня</b>\n\n` +
+        `<b>Выпито воды</b>: ${todayWaterAmount} мл\n${waterProgress}\n\n` +
+        `<b>Калории:</b> ${todayMeals.calories_sum}\n${caloriesProgress}\n\n` +
+        `<b>Белки:</b> ${todayMeals.proteins_sum}\n${proteinsProgress}\n\n` +
+        `<b>Жиры:</b> ${todayMeals.fat_sum}\n${fatProgress}\n\n` +
+        `<b>Углеводы:</b> ${todayMeals.carbohydrates_sum}\n${carbohydratesProgress}\n\n`
+        ,
         { parse_mode: "HTML" }
     )
     await ctx.editMessageReplyMarkup({
@@ -175,23 +175,24 @@ bot.action(["1", "1.2", "1.375", "1.55", "1.725", "1.9"], async (ctx) => {
     });
 });
 
-
-
-
+bot.action("add_meal", async (ctx) => {
+    await ctx.scene.enter("addMeal");
+})
 
 
 bot.help(async ctx => {
     await ctx.reply(`Пользоваться ботом очень просто. Включи мозг.`,
-        Markup.inlineKeyboard([[Markup.button.callback("Пупу", "main")]])
+        Markup.inlineKeyboard([[Markup.button.callback("минью", "main")]])
     )
-
-    let text = await translate("Два кабочка, стакан кефира и 200 грамм апельсинов", { to: "English", from: "Russian" });
-    console.log(text);
-    text = await translate(text, { to: "Russian", from: "English" });
-    console.log(text);
 
 })
 
+bot.command("menu", async (ctx) => {
+    await ctx.replyWithHTML(
+        `Добро пожаловать, <b>${ctx.chat.first_name}</b>!\nЭтот бот поможет вам выработать правильные привычки и наладить своё питание.`,
+        Markup.inlineKeyboard(keyboards.main)
+    );
+})
 
 bot.launch()
 

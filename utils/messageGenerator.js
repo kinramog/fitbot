@@ -16,5 +16,29 @@ export const msg = {
             `~~~~~~~~~~~~~~~~~~~~~~~~~~\n`
         )
     },
+    "vizual_percentage": (totalAmount, currentAmount) => {
+        let progress = "\n▪️▪️▪️▪️▪️▪️ - -1%";
+        let currentPercentage = (currentAmount * 100 / totalAmount).toFixed(2);
+
+        if (currentAmount < totalAmount / 6) {
+            progress = `▪️▪️▪️▪️▪️▪️ - ${currentPercentage}%`;
+        } else if (currentAmount < totalAmount / 6 * 2) {
+            progress = `🟩▪️▪️▪️▪️▪️ - ${currentPercentage}%`;
+        } else if (currentAmount < totalAmount / 6 * 3) {
+            progress = `🟩🟩▪️▪️▪️▪️ - ${currentPercentage}%`;
+        } else if (currentAmount < totalAmount / 6 * 4) {
+            progress = `🟩🟩🟩▪️▪️▪️ - ${currentPercentage}%`;
+        } else if (currentAmount < totalAmount / 6 * 5) {
+            progress = `🟩🟩🟩🟩▪️▪️ - ${currentPercentage}%`;
+        } else if (currentAmount < totalAmount) {
+            progress = `🟩🟩🟩🟩🟩▪️ - ${currentPercentage}%`;
+        } else if (currentAmount <= totalAmount + totalAmount / 10) {
+            progress = `🟩🟩🟩🟩🟩🟩 - ${currentPercentage}%`;
+        } else {
+            progress = `🟩🟩🟩🟩🟩🟩🟧 - ${currentPercentage}%`;
+        }
+
+        return progress;
+    }
 
 }

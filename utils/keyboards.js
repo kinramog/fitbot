@@ -22,7 +22,7 @@ export const keyboards = {
         [Markup.button.callback("Суточная норма воды", "setTotalWater")],
         [Markup.button.callback("Суточная норма калорий", "total_calories")],
         [Markup.button.callback("Белки", "total_proteins"), Markup.button.callback("Жиры", "total_fat"), Markup.button.callback("Углеводы", "total_carbohydrates")],
-        [Markup.button.callback("Перерасчитать дневные нормы", "recalculate")],
+        [Markup.button.callback("Пересчитать дневные нормы", "recalculate")],
         [Markup.button.callback("Назад", "profile_and_settings")],
     ],
     "statistics": [
@@ -44,5 +44,8 @@ export const keyboards = {
         [Markup.button.callback("Умеренная активность", "1.55")],
         [Markup.button.callback("Высокая активность", "1.725")],
         [Markup.button.callback("Очень высокая активность", "1.9")],
+    ],
+    'yes_no': [
+        Markup.button.callback("Да", "yes"), Markup.button.callback("Нет", "no")
     ],
 }
