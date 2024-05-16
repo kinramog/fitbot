@@ -69,7 +69,7 @@ bot.action("profile_and_settings", async (ctx) => {
     let calories = user.user.total_calories;
     let proteins = user.user.total_proteins;
     let fat = user.user.total_fat;
-    let carbohydrate = user.user.total_carbohydrate;
+    let carbohydrate = user.user.total_carbohydrates;
 
     await ctx.editMessageText(
         msg.user_profile(ctx.chat.username, height, weight, age, gender, waterAmount, calories, proteins, fat, carbohydrate, timezone),
@@ -119,8 +119,7 @@ bot.action("statistics", async (ctx) => {
         `<b>Калории:</b> ${todayMeals.calories_sum}\n${caloriesProgress}\n\n` +
         `<b>Белки:</b> ${todayMeals.proteins_sum}\n${proteinsProgress}\n\n` +
         `<b>Жиры:</b> ${todayMeals.fat_sum}\n${fatProgress}\n\n` +
-        `<b>Углеводы:</b> ${todayMeals.carbohydrates_sum}\n${carbohydratesProgress}\n\n`
-        ,
+        `<b>Углеводы:</b> ${todayMeals.carbohydrates_sum}\n${carbohydratesProgress}\n\n`,
         { parse_mode: "HTML" }
     )
     await ctx.editMessageReplyMarkup({
@@ -179,17 +178,31 @@ bot.action("add_meal", async (ctx) => {
     await ctx.scene.enter("addMeal");
 })
 
-
 bot.help(async ctx => {
-    await ctx.reply(`Пользоваться ботом очень просто. Включи мозг.`,
-        Markup.inlineKeyboard([[Markup.button.callback("минью", "main")]])
+    await ctx.reply(
+        `Этот бот поможет вам вести учёт съеденных продуктов и выпитой воды в течение дня.\n` +
+        `При первом запуске вы указали свои параметры, на основе которых были рассчитаны ` +
+        `примерные нормы воды и КБЖУ для вас на день.` +
+        `Суть простая: Вы поели -> Нажали кнопку "Записать приём пищи" -> Ввели съеденные ` +
+        `продукты -> Бот записал всё и заполнил шкалу вашего прогресса по КБЖУ на день.\n` +
+        `То же самое с водой. Выпили стакан воды -> Нажимаете "Записать приём воды" -> ` +
+        `Бот записал всё и также заполнил шкалу прогресса по суточной норме воды.\n` +
+        `Получить информацию о механизме расчёта норм КБЖУ и воды на день можно подробнее узнать введя команду /about`,
+        Markup.inlineKeyboard(keyboards.main)
     )
-
 })
 
 bot.command("menu", async (ctx) => {
     await ctx.replyWithHTML(
         `Добро пожаловать, <b>${ctx.chat.first_name}</b>!\nЭтот бот поможет вам выработать правильные привычки и наладить своё питание.`,
+        Markup.inlineKeyboard(keyboards.main)
+    );
+})
+bot.command("about", async (ctx) => {
+    await ctx.replyWithHTML(
+        `Расчёт нормы калорий на день происходит по формуле Миффлина-Сан Жеора.\n` +
+        `Вода рассчитывается из соотношения 25 мл на 1 кг веса.\n` +
+        `Иные подробности будут добавляться по мере их поступления.`,
         Markup.inlineKeyboard(keyboards.main)
     );
 })
