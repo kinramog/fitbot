@@ -125,7 +125,7 @@ const createUserSceneCreator = () => {
         }
         let proteins = Math.round(calories * 0.3 / 4);
         let fat = Math.round(calories * 0.3 / 9);
-        let carbohydrate = Math.round(calories * 0.4 / 4);
+        let carbohydrates = Math.round(calories * 0.4 / 4);
 
         await ctx.replyWithHTML(
             `Ваши данные успешно записаны!` +
@@ -137,7 +137,7 @@ const createUserSceneCreator = () => {
             `<b>Норма воды в день:</b> ${waterAmount} мл\n` +
             `<b>Суточная норма калорий:</b> ${calories} ккал\n` +
             `<b>Суточная норма\nБелков/Жиров/Углеводов:</b>\n` +
-            `${proteins}<b>/</b>${fat}<b>/</b>${carbohydrate}\n` +
+            `${proteins}<b>/</b>${fat}<b>/</b>${carbohydrates}\n` +
             `<b>Часовой пояс:</b> ${timezone}\n` +
             `~~~~~~~~~~~~~~~~~~~~~~~~~~\n`
         );
@@ -147,7 +147,8 @@ const createUserSceneCreator = () => {
             "воды, калорий, белков, жиров и углеводов.\n" +
             "Если вы захотите изменить данные, это можно будет сделать в настройках профиля."
         );
-        await createUser(ctx.chat.id, timezone, height, weight, age, gender, waterAmount, calories, proteins, fat, carbohydrate);
+
+        await createUser(ctx.chat.id, timezone, height, weight, age, gender, waterAmount, calories, proteins, fat, carbohydrates);
         await ctx.scene.leave();
 
 

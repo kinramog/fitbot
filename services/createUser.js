@@ -1,4 +1,4 @@
-const createUser = async (chat_id, timezone, height, weight, age, gender, waterAmount, calories, proteins, fat, carbohydrate) => {
+const createUser = async (chat_id, timezone, height, weight, age, gender, waterAmount, calories, proteins, fat, carbohydrates) => {
     const url = `http://127.0.0.1:8000/api/create-user`;
 
     const requestOptions = {
@@ -17,14 +17,17 @@ const createUser = async (chat_id, timezone, height, weight, age, gender, waterA
             "total_calories": calories,
             "total_proteins": proteins,
             "total_fat": fat,
-            "total_carbohydrate": carbohydrate,
+            "total_carbohydrates": carbohydrates,
         })
     }
 
-    let data = await fetch(url, requestOptions);
-    let jsonData = await data.json();
-
-    console.log(jsonData);
+    try {
+        let data = await fetch(url, requestOptions);
+        let jsonData = await data.json();
+        console.log(jsonData);
+    } catch (error) {
+        console.error("Ошибка в createUser.js \n", error);
+    }
 }
 
 export default createUser;
