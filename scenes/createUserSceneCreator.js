@@ -35,7 +35,7 @@ const createUserSceneCreator = () => {
     createUserScene.enter(async (ctx) => {
         ctx.session.next_step = REG_STEPS.START;
         await ctx.replyWithHTML(`Добро пожаловать, <b>${ctx.chat.first_name}</b>!\nЭтот бот поможет вам выработать правильные привычки и наладить своё питание.`)
-        await ctx.replyWithHTML(`Для начала заполним ваш профиль: `);
+        await ctx.replyWithHTML(`Для начала заполним ваш профиль. `);
         await ctx.reply("Выберите ваш часовой пояс для корректного отслеживания дневного потребления", Markup.inlineKeyboard(keyboards.timezones));
     });
 
@@ -44,7 +44,7 @@ const createUserSceneCreator = () => {
         ctx.session.next_step = REG_STEPS.TIMEZONE;
         ctx.session.timezone = ctx.callbackQuery.data;
         await ctx.reply("Часовой пояс установлен!");
-        await ctx.reply("Введите свой рост: ");
+        await ctx.reply("Введите свой рост ");
     })
 
     createUserScene.on(message("text"), async (ctx) => {
@@ -58,7 +58,7 @@ const createUserSceneCreator = () => {
                 if (Number.isInteger(height) & height > -1) {
                     ctx.session.next_step = REG_STEPS.HEIGHT;
                     ctx.session.height = height;
-                    await ctx.reply("Введите свой вес: ");
+                    await ctx.reply("Введите свой вес ");
                 } else {
                     await ctx.reply("Введите рост только числом! Без иных символов.");
                 }
@@ -69,7 +69,7 @@ const createUserSceneCreator = () => {
                 if (Number.isInteger(weight) & weight > -1) {
                     ctx.session.next_step = REG_STEPS.WEIGHT;
                     ctx.session.weight = weight;
-                    await ctx.reply("Введите свой возраст: ");
+                    await ctx.reply("Введите свой возраст ");
                 } else {
                     await ctx.reply("Введите вес только числом! Без иных символов.");
                 }
@@ -80,7 +80,7 @@ const createUserSceneCreator = () => {
                 if (Number.isInteger(age) & age > -1) {
                     ctx.session.next_step = REG_STEPS.AGE;
                     ctx.session.age = age;
-                    await ctx.reply("Выберите свой пол: ", Markup.inlineKeyboard([
+                    await ctx.reply("Выберите свой пол ", Markup.inlineKeyboard([
                         Markup.button.callback("Мужской", "man"), Markup.button.callback("Женский", "woman")
                     ]));
                 } else {
@@ -103,7 +103,7 @@ const createUserSceneCreator = () => {
         ctx.session.next_step = REG_STEPS.ACTIVITY;
         ctx.session.gender = gender;
 
-        await ctx.reply("Выберите примерный уровень своей активности: ",
+        await ctx.reply("Выберите примерный уровень своей активности ",
             Markup.inlineKeyboard(keyboards.activity_level));
     });
     createUserScene.action(["1", "1.2", "1.375", "1.55", "1.725", "1.9"], async (ctx) => {
@@ -127,36 +127,39 @@ const createUserSceneCreator = () => {
         let fat = Math.round(calories * 0.3 / 9);
         let carbohydrates = Math.round(calories * 0.4 / 4);
 
-        await ctx.replyWithHTML(
-            `Ваши данные успешно записаны!` +
-            `<b>Рост:</b> ${height} см\n` +
-            `<b>Вес:</b> ${weight} кг\n` +
-            `<b>Возраст:</b> ${age}\n` +
-            `<b>Пол:</b> ${gender}\n` +
-            `~~~~~~~~~~~~~~~~~~~~~~~~~~\n` +
-            `<b>Норма воды в день:</b> ${waterAmount} мл\n` +
-            `<b>Суточная норма калорий:</b> ${calories} ккал\n` +
-            `<b>Суточная норма\nБелков/Жиров/Углеводов:</b>\n` +
-            `${proteins}<b>/</b>${fat}<b>/</b>${carbohydrates}\n` +
-            `<b>Часовой пояс:</b> ${timezone}\n` +
-            `~~~~~~~~~~~~~~~~~~~~~~~~~~\n`
-        );
+        try {
+            await createUser(ctx.chat.id, timezone, height, weight, age, gender, waterAmount, calories, proteins, fat, carbohydrates);
 
-        await ctx.reply(
-            "На основе введенных данных были рассчитаны оптимальные значения суточных норм " +
-            "воды, калорий, белков, жиров и углеводов.\n" +
-            "Если вы захотите изменить данные, это можно будет сделать в настройках профиля."
-        );
+            await ctx.replyWithHTML(
+                `Ваши данные успешно записаны!` +
+                `<b>Рост:</b> ${height} см\n` +
+                `<b>Вес:</b> ${weight} кг\n` +
+                `<b>Возраст:</b> ${age}\n` +
+                `<b>Пол:</b> ${gender}\n` +
+                `~~~~~~~~~~~~~~~~~~~~~~~~~~\n` +
+                `<b>Норма воды в день:</b> ${waterAmount} мл\n` +
+                `<b>Суточная норма калорий:</b> ${calories} ккал\n` +
+                `<b>Суточная норма\nБелков/Жиров/Углеводов:</b>\n` +
+                `${proteins}<b>/</b>${fat}<b>/</b>${carbohydrates}\n` +
+                `<b>Часовой пояс:</b> ${timezone}\n` +
+                `~~~~~~~~~~~~~~~~~~~~~~~~~~\n`
+            );
 
-        await createUser(ctx.chat.id, timezone, height, weight, age, gender, waterAmount, calories, proteins, fat, carbohydrates);
+            await ctx.reply(
+                "На основе введенных данных были рассчитаны оптимальные значения суточных норм " +
+                "воды, калорий, белков, жиров и углеводов.\n" +
+                "Если вы захотите изменить данные, это можно будет сделать в настройках профиля."
+            );
+            await ctx.replyWithHTML(
+                `Все данные заполнены!\n` +
+                `Предлагаю написать /help, чтобы узнать подробности о работе бота и ознакомиться со всеми возможностями`,
+                Markup.inlineKeyboard(keyboards.main)
+            );
+        } catch (error) {
+            console.error("Ошибка в createUserSceneCreator \n", error);
+            await ctx.reply("⚠❗Произошла непредвиденная ошибка❗⚠\nМы уже работаем над её исправлением!");
+        }
         await ctx.scene.leave();
-
-
-        await ctx.replyWithHTML(
-            `Все данные заполнены!\n` +
-            `Предлагаю написать /help, чтобы узнать подробности о работе бота и ознакомиться со всеми возможностями`,
-            Markup.inlineKeyboard(keyboards.main)
-        );
 
         // await ctx.reply("Все данные верны?", Markup.inlineKeyboard([
         //     Markup.button.callback("Да", "yes"), Markup.button.callback("Нет", "no")

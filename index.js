@@ -28,6 +28,15 @@ const addMealScene = addMealSceneCreator()
 const stage = new Stage([setWaterScene, addWaterIntakeScene, createUserScene, setTimezoneScene, editUserParamsScene, addMealScene]);
 bot.use(stage.middleware());
 
+
+bot.command("mew", async ctx => {
+    ctx.reply("Зыряй, какая интересная кнопочка снизу!!1!",
+        Markup.inlineKeyboard([
+            Markup.button.webApp("Буттон", `https://c3fc-109-252-34-170.ngrok-free.app/day-meals/${ctx.chat.id}`)
+        ])
+    );
+})
+
 bot.start(async (ctx) => {
     try {
         let userExist = await getUser(ctx.chat.id);
