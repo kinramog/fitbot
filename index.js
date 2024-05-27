@@ -29,6 +29,8 @@ const stage = new Stage([setWaterScene, addWaterIntakeScene, createUserScene, se
 bot.use(stage.middleware());
 
 
+
+
 bot.command("mew", async ctx => {
     ctx.reply("Зыряй, какая интересная кнопочка снизу!!1!",
         Markup.inlineKeyboard([
@@ -36,6 +38,8 @@ bot.command("mew", async ctx => {
         ])
     );
 })
+
+
 
 bot.start(async (ctx) => {
     try {
