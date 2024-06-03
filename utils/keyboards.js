@@ -26,7 +26,6 @@ export const keyboards = {
         [Markup.button.callback("Назад", "profile_and_settings")],
     ],
     "statistics": [
-        [Markup.button.callback("Четотубудет", "btn")],
         [Markup.button.callback("Назад", "main")],
     ],
     "timezones": [

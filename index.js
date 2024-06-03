@@ -29,18 +29,6 @@ const stage = new Stage([setWaterScene, addWaterIntakeScene, createUserScene, se
 bot.use(stage.middleware());
 
 
-
-
-bot.command("mew", async ctx => {
-    ctx.reply("Зыряй, какая интересная кнопочка снизу!!1!",
-        Markup.inlineKeyboard([
-            Markup.button.webApp("Буттон", `https://c3fc-109-252-34-170.ngrok-free.app/day-meals/${ctx.chat.id}`)
-        ])
-    );
-})
-
-
-
 bot.start(async (ctx) => {
     try {
         let userExist = await getUser(ctx.chat.id);
@@ -134,10 +122,14 @@ bot.action("statistics", async (ctx) => {
         `<b>Жиры:</b> ${todayMeals.fat_sum}\n${fatProgress}\n\n` +
         `<b>Углеводы:</b> ${todayMeals.carbohydrates_sum}\n${carbohydratesProgress}\n\n`,
         { parse_mode: "HTML" }
-    )
+    );
+
     await ctx.editMessageReplyMarkup({
-        inline_keyboard: keyboards.statistics
-    })
+        inline_keyboard: [
+            [Markup.button.webApp("Приёмы пищи за сегодня", `https://6eae-109-252-34-170.ngrok-free.app/day-meals/${ctx.chat.id}`)],
+            ...keyboards.statistics
+        ]
+    });
 })
 
 bot.action([
@@ -223,6 +215,7 @@ bot.command("about", async (ctx) => {
         Markup.inlineKeyboard(keyboards.main)
     );
 })
+
 
 bot.launch()
 
