@@ -20,6 +20,8 @@ const createUser = async (chat_id, timezone, height, weight, age, gender, waterA
             "total_carbohydrates": carbohydrates,
         })
     }
+    
+    console.log(requestOptions);
 
     try {
         let data = await fetch(url, requestOptions);

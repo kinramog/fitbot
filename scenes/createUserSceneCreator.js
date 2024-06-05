@@ -77,14 +77,14 @@ const createUserSceneCreator = () => {
 
             case REG_STEPS.WEIGHT:
                 let age = Number(ctx.message.text);
-                if (Number.isInteger(age) & age > -1) {
+                if (Number.isInteger(age) & age > 0 & age < 120) {
                     ctx.session.next_step = REG_STEPS.AGE;
                     ctx.session.age = age;
                     await ctx.reply("Выберите свой пол ", Markup.inlineKeyboard([
                         Markup.button.callback("Мужской", "man"), Markup.button.callback("Женский", "woman")
                     ]));
                 } else {
-                    await ctx.editMessageText("Введите возраст только числом! Без иных символов.");
+                    await ctx.reply("Введите возраст только числом! Без иных символов. И не больше 120");
                 }
                 break;
 
