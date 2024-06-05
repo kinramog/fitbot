@@ -29,7 +29,7 @@ export const keyboards = {
         [Markup.button.callback("Назад", "main")],
     ],
     "timezones": [
-        [Markup.button.callback("Москва (UTC +3)", "Europe/Moscow")],
+        [Markup.button.callback("Москва (GMT+3)", "Europe/Moscow")],
         [Markup.button.callback("Калининград (GMT+2)", "Europe/Kaliningrad"), Markup.button.callback("Самара (GMT+4)", "Europe/Samara")],
         [Markup.button.callback("Екатеринбург (GMT+5)", "Asia/Yekaterinburg"), Markup.button.callback("Омск (GMT+6)", "Asia/Omsk")],
         [Markup.button.callback("Красноярск (GMT+7)", "Asia/Krasnoyarsk"), Markup.button.callback("Иркутск (GMT+8)", "Asia/Irkutsk")],
