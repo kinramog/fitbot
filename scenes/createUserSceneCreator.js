@@ -34,7 +34,7 @@ const createUserSceneCreator = () => {
 
     createUserScene.enter(async (ctx) => {
         ctx.session.next_step = REG_STEPS.START;
-        await ctx.replyWithHTML(`Добро пожаловать, <b>${ctx.chat.first_name}</b>!\nЭтот бот поможет вам выработать правильные привычки и наладить своё питание.`)
+        await ctx.replyWithHTML(`Добро пожаловать, <b>${ctx.chat.first_name ?? ctx.chat.username ?? "пользователь"}</b>!\nЭтот бот поможет вам выработать правильные привычки и наладить своё питание.`)
         await ctx.replyWithHTML(`Для начала заполним ваш профиль. `);
         await ctx.reply("Выберите ваш часовой пояс для корректного отслеживания дневного потребления", Markup.inlineKeyboard(keyboards.timezones));
     });
