@@ -12,8 +12,12 @@ const changeWaterAmount = async (chat_id, water_amount) => {
         })
     }
 
-    let data = await fetch(url, requestOptions);
-    let jsonData = await data.json();
+    try {
+        let data = await fetch(url, requestOptions);
+        let jsonData = await data.json();
+    } catch (error) {
+        console.error("Ошибка в changeWaterAmount.js\n", error);
+    }
 }
 
 export default changeWaterAmount;

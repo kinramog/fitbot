@@ -9,10 +9,14 @@ const changeUser = async (chat_id, params) => {
         body: JSON.stringify(params)
     }
 
-    let data = await fetch(url, requestOptions);
-    let jsonData = await data.json();
-    console.log(jsonData);
-    return jsonData;
+    try {
+        let data = await fetch(url, requestOptions);
+        let jsonData = await data.json();
+        console.log(jsonData);
+        return jsonData;
+    } catch (error) {
+        console.error("Ошибка в getNutrients.js\n", error);
+    }
 }
 
 export default changeUser;

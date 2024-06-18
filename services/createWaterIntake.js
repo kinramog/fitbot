@@ -12,9 +12,13 @@ const createWaterIntake = async (chat_id, water_amount) => {
         })
     }
 
-    let data = await fetch(url, requestOptions);
-    let jsonData = await data.json();
-    console.log(jsonData);
+    try {
+        let data = await fetch(url, requestOptions);
+        let jsonData = await data.json();
+        console.log(jsonData);
+    } catch (error) {
+        console.error("Ошибка в createWaterIntake.js\n", error);
+    }
 
 }
 

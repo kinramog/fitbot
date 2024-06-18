@@ -26,7 +26,7 @@ const createUser = async (chat_id, timezone, height, weight, age, gender, waterA
     try {
         let data = await fetch(url, requestOptions);
         let jsonData = await data.json();
-        console.log(jsonData);
+        console.log(jsonData); 
     } catch (error) {
         console.error("Ошибка в createUser.js \n", error);
     }

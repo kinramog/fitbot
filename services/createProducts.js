@@ -12,10 +12,14 @@ const createProducts = async (meal_id, products) => {
         })
     }
 
-    let data = await fetch(url, requestOptions);
-    let jsonData = await data.json();
-    console.log(jsonData);
-    
+    try {
+        let data = await fetch(url, requestOptions);
+        let jsonData = await data.json();
+        console.log(jsonData);
+    } catch (error) {
+        console.error("Ошибка в createProducts.js\n", error);
+    }
+
     return jsonData;
 }
 

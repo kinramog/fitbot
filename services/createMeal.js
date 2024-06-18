@@ -16,11 +16,15 @@ const createMeal = async (chat_id, name, total_calories, total_proteins, total_f
         })
     }
 
-    let data = await fetch(url, requestOptions);
-    let jsonData = await data.json();
-    console.log(jsonData);
-    
-    return jsonData;
+    try {
+        let data = await fetch(url, requestOptions);
+        let jsonData = await data.json();
+        console.log(jsonData);
+        return jsonData;
+    } catch (error) {
+        console.error("Ошибка в createMeal.js\n", error);
+    }
+
 }
 
 export default createMeal;
