@@ -43,7 +43,7 @@ const editUserParamsSceneCreator = () => {
             let calories = user.user.total_calories;
             let proteins = user.user.total_proteins;
             let fat = user.user.total_fat;
-            let carbohydrate = user.user.total_carbohydrate;
+            let carbohydrate = user.user.total_carbohydrates;
             await ctx.replyWithHTML(
                 msg.user_profile(ctx.chat.username, height, weight, age, gender, waterAmount, calories, proteins, fat, carbohydrate, timezone),
                 Markup.inlineKeyboard(keyboards.profile_and_settings)

@@ -72,6 +72,7 @@ const getNutrients = async (query) => {
     } catch (error) {
         console.error("Ошибка в getNutrients.js\n", error);
     }
+    
     // foods_msg +=
     //     `<b>{food_name}</b> {food.serving_weight_grams} г / {int(calories)} ккал\n` +
     //     `БЖУ: {protein}/{fat}/{carbohydrate}`

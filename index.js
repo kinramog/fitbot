@@ -150,7 +150,7 @@ bot.action("statistics", async (ctx) => {
 
         await ctx.editMessageReplyMarkup({
             inline_keyboard: [
-                [Markup.button.webApp("Приёмы пищи за сегодня", `https://59f3-109-252-34-170.ngrok-free.app/day-meals/${ctx.chat.id}`)],
+                [Markup.button.webApp("Приёмы пищи за сегодня", `https://b17e-109-252-34-170.ngrok-free.app/day-meals/${ctx.chat.id}`)],
                 ...keyboards.statistics
             ]
         });
